@@ -437,7 +437,7 @@
 
   /* game cards: 3D tilt toward the cursor with a moving glare */
   .game{perspective:900px}
-  .game .ph{transform-style:preserve-3d;will-change:transform}
+  .game .ph{will-change:transform}
   .game:hover .ph{transform:translateY(-6px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg))}
   .game .ph::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .35s;
     background:radial-gradient(circle at var(--gx,50%) var(--gy,0%),rgba(255,255,255,.35),transparent 50%);mix-blend-mode:soft-light}
