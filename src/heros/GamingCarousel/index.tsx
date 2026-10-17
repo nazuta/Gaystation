@@ -37,7 +37,7 @@ export const GamingCarouselHero: React.FC<Page['hero']> = ({ games }) => {
 
   return (
     <div
-      className="hero relative -mt-[6.5rem] flex min-h-[100dvh] items-end overflow-hidden pb-12 isolate"
+      className="hero relative -mt-[6.5rem] flex min-h-[100dvh] items-end overflow-clip pb-12 isolate"
       data-theme="dark"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -70,15 +70,20 @@ export const GamingCarouselHero: React.FC<Page['hero']> = ({ games }) => {
       />
 
       <div className="wrap grid w-full grid-cols-1 items-end gap-10 md:grid-cols-[1fr_auto]">
-        <div className="grid">
+        {/* every slide stays laid out (grid-stacked), just invisible when inactive, so the
+            row's height is always the same max across all of them — line-clamp below caps
+            that max so one long title can't blow out the layout, and nothing jumps when
+            switching slides */}
+        <div className="grid min-w-0">
           {slides.map((game, i) => (
             <div
-              className="col-start-1 row-start-1 transition-[opacity,transform] duration-700 ease-[var(--ease-gs)]"
+              className="col-start-1 row-start-1"
               key={game.id}
               style={{
                 opacity: i === active ? 1 : 0,
                 pointerEvents: i === active ? 'auto' : 'none',
                 transform: i === active ? 'none' : 'translateY(18px)',
+                transition: 'opacity 700ms var(--ease-gs), transform 700ms var(--ease-gs)',
                 transitionDelay: i === active ? '250ms' : '0ms',
               }}
             >
@@ -89,11 +94,13 @@ export const GamingCarouselHero: React.FC<Page['hero']> = ({ games }) => {
                   </b>
                 </span>
               )}
-              <h1 className="font-heading mt-4 max-w-[10ch] text-[clamp(46px,7.4vw,118px)] leading-[.92] font-bold tracking-[-.055em] text-balance">
+              <h1 className="font-heading mt-4 max-h-[2.76em] max-w-[10ch] overflow-hidden text-[clamp(46px,7.4vw,118px)] leading-[.92] font-bold tracking-[-.055em] text-balance">
                 {game.title}
               </h1>
               {game.description && (
-                <p className="mt-5 max-w-[40ch] text-[17px] text-[#c3cddd]">{game.description}</p>
+                <p className="mt-5 max-h-[3.1em] max-w-[40ch] overflow-hidden text-[17px] text-[#c3cddd]">
+                  {game.description}
+                </p>
               )}
               <div className="mt-7 flex flex-wrap gap-3">
                 <a className="btn btn-primary" href="#games">
@@ -108,10 +115,13 @@ export const GamingCarouselHero: React.FC<Page['hero']> = ({ games }) => {
         </div>
 
         {slides.length > 1 && (
-          <div className="hidden gap-3 md:flex">
+          <div
+            className="hidden gap-3 overflow-x-auto [scrollbar-width:none] md:flex [&::-webkit-scrollbar]:hidden"
+            style={{ maxWidth: `${Math.min(slides.length, 4) * 150 + (Math.min(slides.length, 4) - 1) * 12}px` }}
+          >
             {slides.map((game, i) => (
               <button
-                className="group w-[150px] cursor-pointer border-0 bg-none p-0 text-left font-inherit text-foreground"
+                className="group w-[150px] shrink-0 cursor-pointer border-0 bg-none p-0 text-left font-inherit text-foreground"
                 key={game.id}
                 onClick={() => setActive(i)}
                 type="button"
@@ -131,6 +141,7 @@ export const GamingCarouselHero: React.FC<Page['hero']> = ({ games }) => {
                     <Media
                       className="h-full w-full"
                       imgClassName="h-full w-full object-cover"
+                      pictureClassName="block h-full w-full"
                       resource={game.poster}
                     />
                   )}
